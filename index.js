@@ -44,7 +44,7 @@ const startRm = {
             ],
             [
                 {
-                    text: '登记Arrival货',
+                    text: '登记进货',
                 }
             ]
         ],
