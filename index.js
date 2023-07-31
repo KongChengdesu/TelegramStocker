@@ -1,3 +1,12 @@
+const express = require('express');
+const app = express();
+const port = 8080;
+
+app.get('/', (req, res) => res.send('Coé menó tá olhando oq'));
+
+app.listen(port, function() { });
+
+
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const TelegramBot = require('node-telegram-bot-api');
 const process = require('process');
