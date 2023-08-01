@@ -170,7 +170,7 @@ async function registerShipment(msg){
     shipment.date = await waitForInput();
     if(shipment.date == null) return;
     if(shipment.date.match(/否/)){
-        shipment.date = new Date().toLocaleString();
+        shipment.date = new Date().toLocaleDateString('pt-BR');
     }else{
         while(!shipment.date.match(/^\d{1,2}-\d{1,2}-\d{4}$/)){
             await bot.sendMessage(chatId, "日期格式不正确，请重新输入");
@@ -267,7 +267,7 @@ async function registerArrival(msg){
     arrival.date = await waitForInput();
     if(arrival.date == null) return;
     if(arrival.date.match(/否/)){
-        arrival.date = new Date().toLocaleString();
+        arrival.date = new Date().toLocaleDateString('pt-BR');
     }else{
         while(!arrival.date.match(/^\d{1,2}-\d{1,2}-\d{4}$/)){
             await bot.sendMessage(chatId, "日期格式不正确，请重新输入");
