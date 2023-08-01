@@ -103,7 +103,7 @@ async function registerShipment(msg){
     await doc.loadInfo();
     const productSheet = doc.sheetsByTitle['货物列表'];
     const products = await productSheet.getRows({
-        offset: 1,
+        offset: 0,
         limit: 100
     });
     //make a rm keyboard out of product list
@@ -203,7 +203,7 @@ async function registerArrival(msg){
     await doc.loadInfo();
     const productSheet = doc.sheetsByTitle['货物列表'];
     const products = await productSheet.getRows({
-        offset: 1,
+        offset: 0,
         limit: 100
     });
     //make a rm keyboard out of product list
