@@ -89,8 +89,6 @@ bot.on('message', async (msg) => {
 async function waitForInput(){
     //save promise to global variable so we can resolve it later
     inputPromise = new Promise((resolve, reject) => {
-        inputPromise.resolve = resolve;
-        inputPromise.reject = reject;
     });
     return inputPromise;
 }
