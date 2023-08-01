@@ -58,6 +58,7 @@ async function startSequence(){
     await bot.sendMessage(msg.chat.id, "请选择你要进行的操作", startRm);
 }
 
+var inputPromise;
 bot.on('message', async (msg) => {
     if(!msg.text) return;
     if(inputPromise){
@@ -66,6 +67,7 @@ bot.on('message', async (msg) => {
             inputPromise = null;
             return;
         }
+        console.log(msg.text)
         inputPromise.resolve(msg.text);
         inputPromise = null;
         return;
@@ -82,10 +84,8 @@ bot.on('message', async (msg) => {
         registerArrival(msg);
         return;
     }
-    //resolve promise with input
 });
 
-var inputPromise;
 async function waitForInput(){
     //save promise to global variable so we can resolve it later
     inputPromise = new Promise((resolve, reject) => {
