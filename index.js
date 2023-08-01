@@ -68,7 +68,6 @@ bot.on('message', async (msg) => {
             startSequence(msg);
             return;
         }
-        console.log(msg.text)
         inputPromise.resolve(msg.text);
         inputPromise = null;
         return;
@@ -165,7 +164,7 @@ async function registerShipment(msg){
             if(shipment.price == null) return;
         }
     }
-    await bot.sendMessage(chatId, "请输入日期（格式日-月-年，比如20-12-2020），或按否跳过", opts2);
+    await bot.sendMessage(chatId, "请输入日期（格式日-月-年，比如20-05-2020），或按否跳过", opts2);
     shipment.date = await waitForInput();
     if(shipment.date == null) return;
     if(shipment.date.match(/否/)){
@@ -186,6 +185,7 @@ async function registerShipment(msg){
         '时间': shipment.date,
         '用户': msg.from.username || msg.from.first_name
     });
+    await bot.sendMessage(msg.chat.id, "出货记录已保存", startRm);
 }
 
 var arrival = {};
@@ -219,30 +219,23 @@ async function registerArrival(msg){
             arrival.products.push(name);
         }
     }
-    bot.sendMessage(chatId, "请选择货物",opts);
-    waitingForProduct = -1;
-}
-
-async function registerArrival2(msg,productName){
-    const chatId = msg.chat.id;
-    if(!arrival.products.includes(productName)){
-        bot.sendMessage(chatId, "货物不存在，请重新选择", arrival.rm);
-        return;
+    await bot.sendMessage(chatId, "请选择货物",opts);
+    arrival.product = await waitForInput();
+    if(arrival.product == null) return;
+    while(!arrival.products.includes(arrival.product)){
+        await bot.sendMessage(chatId, "货物不存在，请重新选择", opts);
+        arrival.product = await waitForInput();
+        if(arrival.product == null) return;
     }
-    arrival.product = productName;
-    waitingForProduct = -2;
-    bot.sendMessage(chatId, "请输入货物数量");
-}
-
-async function registerArrival3(msg,productQtd){
-    const chatId = msg.chat.id;
-    if(!productQtd.match(/^\d+$/)){
-        bot.sendMessage(chatId, "货物数量不正确，请重新输入");
-        return;
+    await bot.sendMessage(chatId, "请输入货物数量");
+    arrival.qtd = await waitForInput();
+    if(arrival.qtd == null) return;
+    while(!arrival.qtd.match(/^\d+$/)){
+        await bot.sendMessage(chatId, "货物数量不正确，请重新输入");
+        arrival.qtd = await waitForInput();
+        if(arrival.qtd == null) return;
     }
-    arrival.qtd = productQtd;
-    waitingForProduct = -3;
-    const opts = {
+    const opts2 = {
         reply_markup: {
             keyboard: [
                 [
@@ -256,34 +249,38 @@ async function registerArrival3(msg,productQtd){
             one_time_keyboard: true
         }
     }
-    bot.sendMessage(chatId, "请输入货物价格，或按否跳过", opts);
-}
-
-async function registerArrival4(msg,productPrice){
-    const chatId = msg.chat.id;
-    if(productPrice.match(/否/)){
+    await bot.sendMessage(chatId, "请输入货物价格，或按否跳过", opts2);
+    arrival.price = await waitForInput();
+    if(arrival.price == null) return;
+    if(arrival.price.match(/否/)){
         arrival.price = 0;
-        finalizeArrival(msg);
-        return;
+    }else{
+        while(!arrival.price.match(/^\d+$/)){
+            await bot.sendMessage(chatId, "货物价格不正确，请重新输入");
+            arrival.price = await waitForInput();
+            if(arrival.price == null) return;
+        }
     }
-    if(!productPrice.match(/^\d+$/)){
-        bot.sendMessage(chatId, "货物价格不正确，请重新输入");
-        return;
+    await bot.sendMessage(chatId, "请输入日期（格式日-月-年，比如20-05-2020），或按否跳过", opts2);
+    arrival.date = await waitForInput();
+    if(arrival.date == null) return;
+    if(arrival.date.match(/否/)){
+        arrival.date = new Date().toLocaleString();
+    }else{
+        while(!arrival.date.match(/^\d{1,2}-\d{1,2}-\d{4}$/)){
+            await bot.sendMessage(chatId, "日期格式不正确，请重新输入");
+            arrival.date = await waitForInput();
+            if(arrival.date == null) return;
+        }
     }
-    arrival.price = productPrice;
-    finalizeArrival(msg);
-}
-
-async function finalizeArrival(msg){
     //save to google sheet
     const arrivalSheet = doc.sheetsByTitle['进货记录'];
     const row = await arrivalSheet.addRow({
         '货物名称': arrival.product,
         '数量': arrival.qtd,
         '价格': arrival.price,
-        '时间': new Date().toLocaleString(),
+        '时间': arrival.date,
         '用户': msg.from.username || msg.from.first_name
     });
-    bot.sendMessage(msg.chat.id, "进货记录已保存", startRm);
-    waitingForProduct = 0;
+    await bot.sendMessage(msg.chat.id, "进货记录已保存", startRm);
 }
