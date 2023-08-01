@@ -55,6 +55,10 @@ const startRm = {
 }
 
 async function startSequence(msg){
+    if(inputPromise){
+        inputPromise.resolve(null);
+        inputPromise = null;
+    }
     await bot.sendMessage(msg.chat.id, "请选择你要进行的操作", startRm);
 }
 
@@ -63,8 +67,6 @@ bot.on('message', async (msg) => {
     if(!msg.text) return;
     if(inputPromise){
         if(msg.text.match(/取消/)){
-            inputPromise.resolve(null);
-            inputPromise = null;
             startSequence(msg);
             return;
         }
