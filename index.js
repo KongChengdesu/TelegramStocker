@@ -4,7 +4,8 @@ const port = 8080;
 
 app.get('/', (req, res) => res.send('Coé menó tá olhando oq'));
 
-app.listen(port, function() { });
+app.listen(port, function() { console.log(`Server listening on port ${port}...`);
+});
 
 
 const { GoogleSpreadsheet } = require('google-spreadsheet');
