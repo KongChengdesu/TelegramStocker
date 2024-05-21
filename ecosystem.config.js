@@ -23,7 +23,7 @@ const getEnvVariables = () => {
 module.exports = {
     apps : [{
       name      : 'TelegramStocker',
-      script    : 'vopono exec --custom /etc/openvpn/us-lax.prod.surfshark.com_tcp.ovpn --protocol openvpn "node index.js"',
+      script    : 'node index.js',
       node_args : '-r dotenv/config',
       env: getEnvVariables(),
     }],
